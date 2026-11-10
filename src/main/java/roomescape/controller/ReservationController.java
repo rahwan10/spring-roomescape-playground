@@ -2,10 +2,7 @@ package roomescape.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import roomescape.domain.Reservation;
 import roomescape.domain.Reservations;
 import roomescape.dto.ReservationRequest;
@@ -33,11 +30,16 @@ public class ReservationController {
     @PostMapping("/reservations")
     public ResponseEntity<Reservation> create(@RequestBody ReservationRequest request) {
         Reservation reservation = new Reservation(
-                index.incrementAndGet(),                 // A: 1, 2, 3 ... 번호 발급
+                index.incrementAndGet(),
                 request.name(), request.date(), request.time());
-        reservations.add(reservation);                   // 목록에 추가
+        reservations.add(reservation);
 
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId()))   // B: 201 + Location
+        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId()))
                 .body(reservation);
+    }
+    @DeleteMapping("/reservations/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        reservations.removeById(id);
+        return ResponseEntity.noContent().build();
     }
 }
