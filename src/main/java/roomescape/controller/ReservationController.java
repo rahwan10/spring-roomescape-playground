@@ -49,4 +49,10 @@ public class ReservationController {
         System.out.println("핸들러 호출!");
         return ResponseEntity.notFound().build();
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Void> handleBadRequest(IllegalArgumentException e) {
+        System.out.println(e.getMessage());
+        return ResponseEntity.badRequest().build();     // 400
+    }
 }
