@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import roomescape.exception.NotFoundReservationException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +13,10 @@ public class Reservations {
     }
 
     public void removeById(Long id) {
-        values.removeIf(reservation -> reservation.getId().equals(id));
+        boolean removed = values.removeIf(reservation -> reservation.getId().equals(id));
+        if (!removed) {
+            throw new NotFoundReservationException();
+        }
     }
 
     public List<Reservation> getValues() {
