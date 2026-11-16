@@ -5,10 +5,13 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.domain.Reservation;
+import roomescape.exception.InvalidReservationException;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.hamcrest.Matchers.is;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -87,5 +90,10 @@ public class MissionStepTest {
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(404);
+    }
+    @Test
+    void 빈_값으로_예약을_만들면_예외가_발생한다() {
+        assertThatThrownBy(() -> new Reservation(1L, "", "", ""))
+                .isInstanceOf(InvalidReservationException.class);
     }
 }
