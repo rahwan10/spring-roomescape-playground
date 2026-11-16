@@ -12,8 +12,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.notFound().build();        // 404
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Void> handleBadRequest(IllegalArgumentException e) {
+    @ExceptionHandler(InvalidReservationException.class)
+    public ResponseEntity<Void> handleBadRequest(InvalidReservationException e) {
         return ResponseEntity.badRequest().build();      // 400
     }
+
 }
