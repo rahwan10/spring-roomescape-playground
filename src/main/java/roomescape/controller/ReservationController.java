@@ -17,13 +17,13 @@ public class ReservationController {
 
 
     @GetMapping("/reservation")
-    public String reservation() {
+    public String reservationPage() {
         return "reservation";
     }
 
     @GetMapping("/reservations")
     @ResponseBody // json형식 반환
-    public List<Reservation> reservations() {
+    public List<Reservation> readReservations() {
         return reservations.getValues();
     }
 
