@@ -46,7 +46,6 @@ public class ReservationController {
 
     @ExceptionHandler(NotFoundReservationException.class)
     public ResponseEntity<Void> handleNotFound(NotFoundReservationException e) {
-        System.out.println("핸들러 호출!");
         return ResponseEntity.notFound().build();
     }
 
