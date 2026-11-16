@@ -9,12 +9,12 @@ import roomescape.dto.ReservationRequest;
 
 import java.net.URI;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
+
 
 @Controller
 public class ReservationController {
     private final Reservations reservations = new Reservations();
-    private final AtomicLong index = new AtomicLong(0);
+
 
     @GetMapping("/reservation")
     public String reservation() {
@@ -29,11 +29,7 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity<Reservation> create(@RequestBody ReservationRequest request) {
-        Reservation reservation = new Reservation(
-                index.incrementAndGet(),
-                request.name(), request.date(), request.time());
-        reservations.add(reservation);
-
+        Reservation reservation = reservations.add(request.name(), request.date(), request.time());
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId()))
                 .body(reservation);
     }
