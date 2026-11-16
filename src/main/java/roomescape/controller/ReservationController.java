@@ -16,10 +16,7 @@ public class ReservationController {
     private final Reservations reservations = new Reservations();
 
 
-    @GetMapping("/reservation")
-    public String reservationPage() {
-        return "reservation";
-    }
+
 
     @GetMapping("/reservations")
     @ResponseBody // json형식 반환
