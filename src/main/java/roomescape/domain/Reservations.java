@@ -13,7 +13,7 @@ public class Reservations {
     }
 
     public void removeById(Long id) {
-        boolean removed = values.removeIf(reservation -> reservation.getId().equals(id));
+        boolean removed = values.removeIf(reservation -> reservation.hasId(id));
         if (!removed) {
             throw new NotFoundReservationException();
         }
