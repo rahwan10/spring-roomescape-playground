@@ -46,4 +46,35 @@ public class MissionStepTest {
         RestAssured.delete("/reservations/1").then().statusCode(204);
         RestAssured.get("/reservations").then().statusCode(200).body("size()", is(0));
     }
+
+    @Test
+    void 사단계_잘못된_추가_요청은_저장하지_않는다() {
+        Map<String, String> request = Map.of("name", "브라운", "date", "", "time", "");
+
+        RestAssured.given().contentType(ContentType.JSON).body(request)
+                .post("/reservations")
+                .then().statusCode(400).body("message", is("예약자, 날짜, 시간을 입력해 주세요."));
+
+        RestAssured.get("/reservations").then().statusCode(200).body("size()", is(0));
+        RestAssured.delete("/reservations/1").then().statusCode(404);
+
+        Map<String, String> validRequest = Map.of(
+                "name", "브라운", "date", "2023-08-05", "time", "15:40");
+        RestAssured.given().contentType(ContentType.JSON).body(validRequest)
+                .post("/reservations")
+                .then().statusCode(201).body("id", is(1));
+    }
+
+    @Test
+    void 사단계_누락하거나_공백만_보낸_필수값도_거절한다() {
+        RestAssured.given().contentType(ContentType.JSON)
+                .body(Map.of("name", "브라운", "date", "2023-08-05"))
+                .post("/reservations").then().statusCode(400);
+
+        RestAssured.given().contentType(ContentType.JSON)
+                .body(Map.of("name", "  ", "date", "2023-08-05", "time", "15:40"))
+                .post("/reservations").then().statusCode(400);
+
+        RestAssured.get("/reservations").then().statusCode(200).body("size()", is(0));
+    }
 }

@@ -2,10 +2,12 @@ package roomescape;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,15 +43,18 @@ public class ReservationController {
      */
     @PostMapping("/reservations")
     public ResponseEntity<Reservation> createReservation(@RequestBody ReservationRequest request) {
-        // 1. 서버가 새 ID를 만들고, 요청 데이터를 예약 객체로 묶는다.
+        // 1. 요청을 먼저 검사한다. 실패하면 ID 생성과 저장까지 진행하지 않는다.
+        request.validate();
+
+        // 2. 서버가 새 ID를 만들고, 요청 데이터를 예약 객체로 묶는다.
         long id = nextId.incrementAndGet();
         Reservation reservation = new Reservation(
                 id, request.name(), request.date(), request.time());
 
-        // 2. ID를 키로 예약을 저장한다.
+        // 3. ID를 키로 예약을 저장한다.
         reservations.put(id, reservation);
 
-        // 3. 201 Created, Location 헤더, 생성된 예약 JSON을 응답한다.
+        // 4. 201 Created, Location 헤더, 생성된 예약 JSON을 응답한다.
         URI location = URI.create("/reservations/" + id);
         return ResponseEntity.created(location).body(reservation);
     }
@@ -67,5 +72,12 @@ public class ReservationController {
 
         // 삭제 성공 시 응답 본문 없이 204 No Content를 보낸다.
         return ResponseEntity.noContent().build();
+    }
+
+    /** 예약 요청 검증 실패만 400으로 바꾸고, 서버의 다른 예외는 감추지 않는다. */
+    @ExceptionHandler(InvalidReservationRequestException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidReservation(
+            InvalidReservationRequestException exception) {
+        return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage()));
     }
 }
