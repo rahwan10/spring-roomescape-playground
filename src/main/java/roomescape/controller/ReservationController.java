@@ -8,6 +8,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.Reservations;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
+import roomescape.exception.NotFoundReservationException;
 
 import java.net.URI;
 import java.util.List;
@@ -15,7 +16,6 @@ import java.util.List;
 
 @Controller
 public class ReservationController {
-    private final Reservations reservations = new Reservations();
     private final ReservationDao reservationDao;
 
     public ReservationController(ReservationDao reservationDao) {
@@ -33,14 +33,18 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> create(@RequestBody ReservationRequest request) {
-        Reservation reservation = reservations.add(request.name(), request.date(), request.time());
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId()))
-                .body(ReservationResponse.from(reservation));
+        Reservation reservation = new Reservation(null, request.name(), request.date(), request.time());
+        Reservation saved = reservationDao.save(reservation);
+        return ResponseEntity.created(URI.create("/reservations/" + saved.getId()))
+                .body(ReservationResponse.from(saved));
     }
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        reservations.removeById(id);
+        int deleted = reservationDao.deleteById(id);
+        if (deleted == 0) {
+            throw new NotFoundReservationException();
+        }
         return ResponseEntity.noContent().build();
     }
 }
