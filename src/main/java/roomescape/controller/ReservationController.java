@@ -1,11 +1,9 @@
 package roomescape.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import roomescape.dao.ReservationDao;
 import roomescape.domain.Reservation;
-import roomescape.domain.Reservations;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.exception.InvalidReservationException;
