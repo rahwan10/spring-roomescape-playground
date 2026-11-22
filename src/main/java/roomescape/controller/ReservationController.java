@@ -8,9 +8,11 @@ import roomescape.domain.Reservation;
 import roomescape.domain.Reservations;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
+import roomescape.exception.InvalidReservationException;
 import roomescape.exception.NotFoundReservationException;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -34,6 +36,9 @@ public class ReservationController {
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> create(@RequestBody ReservationRequest request) {
         Reservation reservation = new Reservation(null, request.name(), request.date(), request.time());
+        if (reservation.isBefore(LocalDate.now())) {
+            throw new InvalidReservationException("지난 날짜는 예약할 수 없습니다.");
+        }
         Reservation saved = reservationDao.save(reservation);
         return ResponseEntity.created(URI.create("/reservations/" + saved.getId()))
                 .body(ReservationResponse.from(saved));
