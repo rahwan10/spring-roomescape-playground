@@ -4,10 +4,12 @@ import roomescape.exception.InvalidReservationException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 public class Reservation {
     private static final int MAX_NAME_LENGTH = 15;
+    private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
 
     private final Long id;
     private final String name;
@@ -55,7 +57,7 @@ public class Reservation {
 
     private static void validateTime(String time) {
         try {
-            LocalTime.parse(time);              // "25:99" 같은 값이면 예외
+            LocalTime.parse(time, TIME_FORMAT);
         } catch (DateTimeParseException e) {
             throw new InvalidReservationException("시간 형식이 올바르지 않습니다.");
         }
