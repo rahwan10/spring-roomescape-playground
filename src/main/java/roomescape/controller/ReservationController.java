@@ -16,7 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 
-@Controller
+@RestController
 public class ReservationController {
     private final ReservationDao reservationDao;
 
@@ -26,7 +26,6 @@ public class ReservationController {
 
 
     @GetMapping("/reservations")
-    @ResponseBody // json형식 반환
     public List<ReservationResponse> readReservations() {
         return reservationDao.findAll().stream()
                 .map(ReservationResponse::from)
@@ -34,7 +33,7 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<ReservationResponse> create(@RequestBody ReservationRequest request) {
+    public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationRequest request) {
         Reservation reservation = new Reservation(null, request.name(), request.date(), request.time());
         if (reservation.isBefore(LocalDate.now())) {
             throw new InvalidReservationException("지난 날짜는 예약할 수 없습니다.");
@@ -45,7 +44,7 @@ public class ReservationController {
     }
 
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
         int deleted = reservationDao.deleteById(id);
         if (deleted == 0) {
             throw new NotFoundReservationException();
