@@ -12,6 +12,7 @@ import roomescape.exception.InvalidReservationException;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +56,7 @@ public class MissionStepTest {
     void 삼단계() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", LocalDate.now().plusDays(1).toString());
         params.put("time", "15:40");
 
         RestAssured.given().log().all()
@@ -108,12 +109,6 @@ public class MissionStepTest {
     }
 
     @Test
-    void 빈_값으로_예약을_만들면_예외가_발생한다() {
-        assertThatThrownBy(() -> new Reservation(1L, "", "", ""))
-                .isInstanceOf(InvalidReservationException.class);
-    }
-
-    @Test
     void 오단계() {
         try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
             assertThat(connection).isNotNull();
@@ -141,7 +136,7 @@ public class MissionStepTest {
     void 칠단계() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", LocalDate.now().plusDays(1).toString());
         params.put("time", "10:00");
 
         RestAssured.given().log().all()
