@@ -26,7 +26,7 @@ public class ReservationController {
     @GetMapping("/reservations")
     @ResponseBody // json형식 반환
     public List<ReservationResponse> readReservations() {
-        return reservations.getValues().stream()
+        return reservationDao.findAll().stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
