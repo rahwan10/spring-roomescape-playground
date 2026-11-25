@@ -44,6 +44,23 @@ public class MissionStepTest {
     }
 
     @Test
+    void 칠단계_API로_추가하고_삭제한_예약이_데이터베이스에_반영된다() {
+        Map<String, String> request = Map.of(
+                "name", "브라운", "date", "2023-08-05", "time", "10:00");
+        RestAssured.given().contentType(ContentType.JSON).body(request)
+                .post("/reservations").then().statusCode(201)
+                .header("Location", "/reservations/1").body("id", is(1));
+        assertThat(reservationCount()).isEqualTo(1);
+
+        RestAssured.delete("/reservations/1").then().statusCode(204);
+        assertThat(reservationCount()).isZero();
+    }
+
+    private int reservationCount() {
+        return jdbcTemplate.queryForObject("SELECT count(*) FROM reservation", Integer.class);
+    }
+
+    @Test
     void 일단계() {
         RestAssured.given().log().all()
                 .when().get("/")
