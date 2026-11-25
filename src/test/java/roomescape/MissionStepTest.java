@@ -2,17 +2,35 @@ package roomescape;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @Test
+    void 오단계_H2에_예약_테이블을_생성한다() throws SQLException {
+        try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
+            assertThat(connection.getCatalog()).isEqualTo("DATABASE");
+            assertThat(
+                    connection.getMetaData().getTables(null, null, "RESERVATION", null).next())
+                    .isTrue();
+        }
+    }
 
     @Test
     void 일단계() {
