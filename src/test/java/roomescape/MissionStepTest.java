@@ -33,6 +33,17 @@ public class MissionStepTest {
     }
 
     @Test
+    void 육단계_데이터베이스에_저장된_예약을_API에서_조회한다() {
+        jdbcTemplate.update("INSERT INTO reservation(name, date, time) VALUES (?, ?, ?)",
+                "브라운", "2023-08-05", "15:40");
+
+        int databaseCount = jdbcTemplate.queryForObject(
+                "SELECT count(*) FROM reservation", Integer.class);
+        RestAssured.get("/reservations").then().statusCode(200)
+                .body("size()", is(databaseCount), "[0].name", is("브라운"));
+    }
+
+    @Test
     void 일단계() {
         RestAssured.given().log().all()
                 .when().get("/")

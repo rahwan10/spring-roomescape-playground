@@ -28,13 +28,19 @@ public class ReservationController {
     // 새 예약의 ID를 만든다. 서버를 재시작하면 이 값도 초기화된다.
     private final AtomicLong nextId = new AtomicLong();
 
+    private final ReservationRepository reservationRepository;
+
+    public ReservationController(ReservationRepository reservationRepository) {
+        this.reservationRepository = reservationRepository;
+    }
+
     /**
      * GET /reservations 요청을 처리한다.
-     * 저장된 예약 목록의 복사본을 반환하면 Spring이 JSON 배열로 응답한다.
+     * 데이터베이스에서 읽은 예약 목록을 Spring이 JSON 배열로 응답한다.
      */
     @GetMapping("/reservations")
     public List<Reservation> readReservations() {
-        return List.copyOf(reservations.values());
+        return reservationRepository.findAll();
     }
 
     /**
